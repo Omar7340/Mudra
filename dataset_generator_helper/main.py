@@ -11,6 +11,8 @@
 import customtkinter
 import cv2
 from PIL import Image
+import mediapipe as mp
+import time
 
 positions = []
 
@@ -25,6 +27,15 @@ TIK = 1000 // FPS
 class OpenCVFrame(customtkinter.CTkFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # FPS metrics
+        self.ptime = 0
+        self.ctime = 0
+
+        self.fps = 0
+
+        self.fps_label = customtkinter.CTkLabel(self, text="FPS: "+str(self.fps))
+        self.fps_label.pack(fill="both", expand=True)
 
         self.cap = cv2.VideoCapture(VIDEO_CAPTURE)
 
@@ -41,7 +52,10 @@ class OpenCVFrame(customtkinter.CTkFrame):
     def video_stream(self):
         ret, frame = self.cap.read()
         if ret:
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+            frame = self.mediapipe_process(frame)
+
             frame = Image.fromarray(frame)
             
             image = customtkinter.CTkImage(dark_image=frame, size=(frame.width, frame.height))
@@ -52,7 +66,47 @@ class OpenCVFrame(customtkinter.CTkFrame):
             self.frame.configure(text="No frame")
         
         self.frame.pack(fill="both", expand=True)
+
+        self.ctime = time.time()
+        self.fps = 1 / (self.ctime - self.ptime)
+        self.ptime = self.ctime
+
+        self.fps_label.configure(text="FPS: "+str(int(self.fps)))
+
         self.after(TIK, self.video_stream)
+    
+    def mediapipe_init(self):
+        self.mpHands = mp.solutions.hands
+        self.hands = self.mpHands.Hands()
+        self.mpDraw = mp.solutions.drawing_utils
+    
+    def mediapipe_process(self, frame):
+        if not hasattr(self, "hands"):
+            self.mediapipe_init()
+        
+        frame = cv2.flip(frame, 1)
+        results = self.hands.process(frame)
+
+        if results.multi_hand_landmarks:
+            for handLms in results.multi_hand_landmarks:
+                for id, lm in enumerate(handLms.landmark):
+                    h, w, c = frame.shape
+                    cx, cy = int(lm.x * w), int(lm.y * h)
+                    # print(id, cx, cy)
+                    if id == 4 :
+                        cv2.circle(frame, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
+                    if id == 8 :
+                        cv2.circle(frame, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
+                    if id == 12 :
+                        cv2.circle(frame, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
+                    if id == 16 :
+                        cv2.circle(frame, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
+                    if id == 20 :
+                        cv2.circle(frame, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
+
+                self.mpDraw.draw_landmarks(frame, handLms, self.mpHands.HAND_CONNECTIONS)
+        
+        return frame
     
     def clean_up(self):
         self.cap.release()
