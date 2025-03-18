@@ -37,17 +37,29 @@ class OpenCVFrame(customtkinter.CTkFrame):
         self.fps_label = customtkinter.CTkLabel(self, text="FPS: "+str(self.fps))
         self.fps_label.pack(fill="both", expand=True)
 
+        # Video capture
         self.cap = cv2.VideoCapture(VIDEO_CAPTURE)
 
         self.frame = customtkinter.CTkLabel(self, text="Loading...")
         self.frame.pack(fill="both", expand=True)
 
-        self.bind("<KeyPress-space>", self.freeze_frame)
+        # Video controls
+        self.paused = False
+        self.pause_btn = customtkinter.CTkButton(self, text="Pause", command=self.freeze_frame)
+        self.pause_btn.pack(fill="both", expand=True)
 
         self.video_stream()
     
-    def freeze_frame(self, event):
-        pass
+    def freeze_frame(self):
+        self.paused = not self.paused
+        print("Paused" if self.paused else "Playing")
+
+        if self._job is not None:
+            self.after_cancel(self._job)
+        self._job = None
+
+        if not self.paused:
+            self.video_stream()
     
     def video_stream(self):
         ret, frame = self.cap.read()
@@ -73,7 +85,7 @@ class OpenCVFrame(customtkinter.CTkFrame):
 
         self.fps_label.configure(text="FPS: "+str(int(self.fps)))
 
-        self.after(TIK, self.video_stream)
+        self._job = self.after(TIK, self.video_stream)
     
     def mediapipe_init(self):
         self.mpHands = mp.solutions.hands

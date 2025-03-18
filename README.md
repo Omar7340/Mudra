@@ -12,6 +12,7 @@ This project consists of three main modules:
 ## Inspiration
 
  - Hand Tracking using MediaPipe from Sousannah (see [https://github.com/Sousannah/hand-tracking-using-mediapipe](https://github.com/Sousannah/hand-tracking-using-mediapipe))
+ - Adding a Webcam Stream to our Python - Tkinter Drone Controller | Part 2: GUI Video Stream (see [https://www.youtube.com/watch?v=Dj-Jyws6rzA](https://www.youtube.com/watch?v=Dj-Jyws6rzA))
  - [Mudra signs](https://naruto.fandom.com/fr/wiki/Mudr%C3%A2) in Naruto
 
 ## License
