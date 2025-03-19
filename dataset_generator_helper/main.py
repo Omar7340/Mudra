@@ -26,7 +26,7 @@ HEIGHT = 400
 
 
 class AddPosition(ctk.CTkFrame):
-    def __init__(self, master, position_manager : PositionManager, **kwargs):
+    def __init__(self, master : ctk.CTk, position_manager : PositionManager, **kwargs):
         super().__init__(master, **kwargs)
 
         self.pm = position_manager
@@ -37,8 +37,10 @@ class AddPosition(ctk.CTkFrame):
         self.canvas = OpenCVFrame(master=self)
         self.canvas.grid(row=1, column=0, sticky="nsew")
 
-        self.take_snapshot_btn = ctk.CTkButton(self, text="Take snapshot", command=self.take_snapshot)
+        self.take_snapshot_btn = ctk.CTkButton(self, text="Take snapshot (or press !)", command=self.take_snapshot)
         self.take_snapshot_btn.grid(row=3, column=0, sticky="nsew")
+
+        master.bind("!", lambda e : self.take_snapshot())
 
     def take_snapshot(self):
 
