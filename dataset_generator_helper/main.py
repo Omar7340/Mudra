@@ -12,15 +12,15 @@ import customtkinter as ctk
 from opencv_frame import OpenCVFrame
 from position_manager import PositionManager
 from scrollable_label import ScrollableLabels
-positions = [
-{'label': '1', 'position': ""},
-{'label': '2', 'position': ""},
-{'label': '3', 'position': ""},
-{'label': '4', 'position': ""}
-    ]
+
+import re
+import os
+import json
 
 WIDTH = 500
 HEIGHT = 400
+
+SAVE_PATH = "./dataset/"
 
 
 
@@ -62,13 +62,45 @@ class PositionFrame(ctk.CTkFrame):
     def __init__(self, master, position_manager, **kwargs):
         super().__init__(master, **kwargs)
 
+        self.root = master
+
+        self.pm = position_manager
+
         self.grid_rowconfigure(1, weight=1)
 
         self.label = ctk.CTkLabel(self, text="List of position")
-        self.label.grid(row=0, column=0, sticky="ew")
+        self.label.grid(row=0, column=0, columnspan=2, sticky="ew")
 
         self.label_positions = ScrollableLabels(master=self, position_manager=position_manager)
-        self.label_positions.grid(row=1, column=0, sticky="nsew")
+        self.label_positions.grid(row=1, column=0, columnspan=2, sticky="nsew")
+
+        self.save_btn = ctk.CTkButton(self, text="Save", command=self.save_positions)
+        self.save_btn.grid(row=2, column=0, padx=(0, 10))
+
+        self.quit_btn = ctk.CTkButton(self, text="Quit", command= lambda: self.root.destroy())
+        self.quit_btn.grid(row=2, column=1)
+    
+    def save_positions(self):
+        positions = self.pm.get_positions()
+
+        self.save_dialog = ctk.CTkInputDialog(text="Type the filename (it will be saved at {})".format(SAVE_PATH), title="Save Dataset")
+        
+        filename = self.save_dialog.get_input()
+        if filename:
+            # Sanitize filename by removing invalid characters and ensure .json extension
+            sanitized = re.sub(r'[<>:"/\\|?*]', '', filename)
+            if not sanitized.endswith('.json'):
+                sanitized += '.json'
+            
+            
+            # Create save directory if it doesn't exist
+            os.makedirs(SAVE_PATH, exist_ok=True)
+            
+            # Save positions to JSON file
+            save_file = os.path.join(SAVE_PATH, sanitized)
+            with open(save_file, 'w') as f:
+                json.dump(positions, f)
+                print(f"Saved positions to {save_file}")
 
 class App(ctk.CTk):
     def __init__(self, *args, **kwargs):
@@ -85,10 +117,11 @@ class App(ctk.CTk):
         self.pm = PositionManager()
 
         self.positions_frame = PositionFrame(master=self, position_manager=self.pm)
-        self.positions_frame.grid(row=0, column=0, sticky="nsew")
+        self.positions_frame.grid(row=1, column=0, padx=(0, 10), sticky="nsew")
 
         self.capture_frame = AddPosition(master=self, position_manager=self.pm)
-        self.capture_frame.grid(row=0, column=1, sticky="nsew")
+        self.capture_frame.grid(row=1, column=1, sticky="nsew")
+        
 
 app = App()
 app.mainloop()
