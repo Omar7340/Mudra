@@ -153,6 +153,8 @@ class AddPosition(customtkinter.CTkFrame):
         self.take_snapshot_btn.grid(row=3, column=0, sticky="nsew")
 
     def take_snapshot(self):
+        global positions
+
         self.canvas.freeze_frame()
         current_pos = self.canvas.get_current_position()
 
@@ -181,9 +183,16 @@ class ScrollablePositions(customtkinter.CTkScrollableFrame):
         self.grid_columnconfigure(1, weight=1)
 
         self.list = []
-        self.after(100, self.update_pos)
+        self.update_pos()
+    
+    def clean(self):
+        for i in self.list:
+            i[0].destroy()
+            i[1].destroy()
     
     def update_pos(self):
+        global positions
+
         row = 0
         for i in positions:
             label = customtkinter.CTkLabel(self, text=i['label'])
@@ -194,10 +203,12 @@ class ScrollablePositions(customtkinter.CTkScrollableFrame):
 
             self.list.append((label, remove_btn))
             row += 1
-    
+        
+        self.after(500, self.update_pos)
+
     def remove_pos(self, label):
-        filter(lambda x: (x.label != label),positions)
-        self.update_pos()
+        global positions
+        positions = filter(lambda x: (x['label'] != label),positions)
 
 class PositionFrame(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
