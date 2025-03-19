@@ -134,11 +134,9 @@ class OpenCVFrame(customtkinter.CTkFrame):
         self.cap.release()
         cv2.destroyAllWindows()    
 
-class AddPosition(customtkinter.CTkToplevel):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.geometry("800x800")
-        self.title("Add position")
+class AddPosition(customtkinter.CTkFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -194,24 +192,8 @@ class App(customtkinter.CTk):
         self.textbox.grid(row=1, column=0, sticky="nsew")
         self.textbox.insert("0.0", "Some example text!\n" * 50)
 
-        self.button = customtkinter.CTkButton(
-            self, text="Capture position", command=self.capture_position)
-        self.button.grid(row=2, column=0, sticky="ew")
-
-        self.capture_window = None
-
-    def print_positions(self):
-        i = 0
-        for position in positions:
-            i += 1
-            self.textbox.insert("end", str(i) + ". " + position + "\n")
-
-    def capture_position(self):
-        if self.capture_window is None or not self.capture_window.winfo_exists():
-            # create window if its None or destroyed
-            self.capture_window = AddPosition(self)
-        self.capture_window.focus()  # if window exists focus it
-
+        self.capture_frame = AddPosition(master=self)
+        self.capture_frame.grid(row=1, column=1, sticky="nsew")
 
 app = App()
 app.mainloop()
