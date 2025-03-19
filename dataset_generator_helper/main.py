@@ -166,10 +166,8 @@ class AddPosition(customtkinter.CTkFrame):
             print("No position to save")
 
     def destroy(self): # TODO: implement destroy method
-        super().destroy()
         self.canvas.clean_up()
-
-
+        super().destroy()
 
 class App(customtkinter.CTk):
     def __init__(self, *args, **kwargs):
