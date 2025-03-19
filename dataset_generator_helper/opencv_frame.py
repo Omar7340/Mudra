@@ -28,23 +28,7 @@ class OpenCVFrame(ctk.CTkFrame):
         self.frame = ctk.CTkLabel(self, text="Loading...")
         self.frame.pack(fill="both", expand=True)
 
-        # Video controls
-        self.paused = False
-        self.pause_btn = ctk.CTkButton(self, text="Pause", command=self.freeze_frame)
-        self.pause_btn.pack(fill="both", expand=True)
-
         self.video_stream()
-    
-    def freeze_frame(self):
-        self.paused = not self.paused
-        print("Paused" if self.paused else "Playing")
-
-        if self._job is not None:
-            self.after_cancel(self._job)
-        self._job = None
-
-        if not self.paused:
-            self.video_stream()
     
     def video_stream(self):
         ret, frame = self.cap.read()

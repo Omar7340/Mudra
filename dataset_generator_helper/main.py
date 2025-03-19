@@ -41,9 +41,7 @@ class AddPosition(ctk.CTkFrame):
         self.take_snapshot_btn.grid(row=3, column=0, sticky="nsew")
 
     def take_snapshot(self):
-        global positions
 
-        self.canvas.freeze_frame()
         current_pos = self.canvas.get_current_position()
 
         if current_pos is not None:
