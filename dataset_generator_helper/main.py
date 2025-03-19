@@ -48,7 +48,23 @@ class OpenCVFrame(customtkinter.CTkFrame):
         self.pause_btn = customtkinter.CTkButton(self, text="Pause", command=self.freeze_frame)
         self.pause_btn.pack(fill="both", expand=True)
 
+        self.take_snapshot_btn = customtkinter.CTkButton(self, text="Take snapshot", command=self.take_snapshot)
+        self.take_snapshot_btn.pack(fill="both", expand=True, pady=10)
+
         self.video_stream()
+    
+    def take_snapshot(self):
+        self.freeze_frame()
+
+        img = self.frame.image
+        pos = self.actual_position
+
+        if img is not None and pos is not None:
+            positions.append(pos)
+            print("Position saved")
+            print(pos)
+        else:
+            print("No position to save")
     
     def freeze_frame(self):
         self.paused = not self.paused
@@ -96,6 +112,9 @@ class OpenCVFrame(customtkinter.CTkFrame):
         if not hasattr(self, "hands"):
             self.mediapipe_init()
         
+        self.actual_position = None
+        self.frame.image = None
+        
         frame = cv2.flip(frame, 1)
         results = self.hands.process(frame)
 
@@ -117,6 +136,7 @@ class OpenCVFrame(customtkinter.CTkFrame):
                         cv2.circle(frame, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
 
                 self.mpDraw.draw_landmarks(frame, handLms, self.mpHands.HAND_CONNECTIONS)
+            self.actual_position = results.multi_hand_landmarks
         
         return frame
     
