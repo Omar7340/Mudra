@@ -48,23 +48,7 @@ class OpenCVFrame(customtkinter.CTkFrame):
         self.pause_btn = customtkinter.CTkButton(self, text="Pause", command=self.freeze_frame)
         self.pause_btn.pack(fill="both", expand=True)
 
-        self.take_snapshot_btn = customtkinter.CTkButton(self, text="Take snapshot", command=self.take_snapshot)
-        self.take_snapshot_btn.pack(fill="both", expand=True, pady=10)
-
         self.video_stream()
-    
-    def take_snapshot(self):
-        self.freeze_frame()
-
-        img = self.frame.image
-        pos = self.actual_position
-
-        if img is not None and pos is not None:
-            positions.append(pos)
-            print("Position saved")
-            print(pos)
-        else:
-            print("No position to save")
     
     def freeze_frame(self):
         self.paused = not self.paused
@@ -140,10 +124,15 @@ class OpenCVFrame(customtkinter.CTkFrame):
         
         return frame
     
+    def get_current_position(self):
+        pos = [self.frame.image, self.actual_position]
+        if pos[0] is not None and pos[1] is not None:
+            return pos
+        return None
+    
     def clean_up(self):
         self.cap.release()
-        cv2.destroyAllWindows()
-    
+        cv2.destroyAllWindows()    
 
 class AddPosition(customtkinter.CTkToplevel):
     def __init__(self, *args, **kwargs):
@@ -154,27 +143,29 @@ class AddPosition(customtkinter.CTkToplevel):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
 
-        self.label = customtkinter.CTkLabel(
-            self,
-            text="Give a label to the position (if blank the position will have index as label)"
-        )
-        self.label.grid(row=0, column=0, sticky="ew")
-
-        self.canvas = OpenCVFrame(self)
+        self.canvas = OpenCVFrame(master=self)
         self.canvas.grid(row=1, column=0, sticky="nsew")
 
-        self.entry = customtkinter.CTkEntry(self)
-        self.entry.grid(row=2, column=0, sticky="ew")
+        self.take_snapshot_btn = customtkinter.CTkButton(self, text="Take snapshot", command=self.take_snapshot)
+        self.take_snapshot_btn.grid(row=3, column=0, sticky="nsew")
 
-        self.button = customtkinter.CTkButton(
-            self, 
-            text="Save position", 
-            command=self.save_position
-        )
-        self.button.grid(row=3, column=0, sticky="ew")
+    def take_snapshot(self):
+        self.canvas.freeze_frame()
+        current_pos = self.canvas.get_current_position()
 
-    def save_position(self): # TODO: implement save_position method
-        pass
+        if current_pos is not None:
+            img, pos = current_pos
+            data_item = {
+                "label": str(len(positions)+1),
+                "image": img,
+                "position": pos
+            }
+
+            positions.append(data_item)
+            print("Position saved")
+            print(data_item)
+        else:
+            print("No position to save")
 
     def destroy(self): # TODO: implement destroy method
         super().destroy()
