@@ -62,6 +62,8 @@ class PositionFrame(ctk.CTkFrame):
     def __init__(self, master, position_manager, **kwargs):
         super().__init__(master, **kwargs)
 
+        self.grid_rowconfigure(1, weight=1)
+
         self.label = ctk.CTkLabel(self, text="List of position")
         self.label.grid(row=0, column=0, sticky="ew")
 
