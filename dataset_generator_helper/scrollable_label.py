@@ -23,8 +23,10 @@ class ScrollableLabels(ctk.CTkScrollableFrame):
 
         row = 0
         for k in positions.keys():
+            label = remove_btn = None
+
             label = ctk.CTkLabel(self, text=k)
-            remove_btn = ctk.CTkButton(self, text="Remove", command= lambda: self.pm.remove_position(k))
+            remove_btn = ctk.CTkButton(self, text="Remove", command= lambda x=k: self.pm.remove_position(x))
 
             label.grid(row=row, column=0, sticky="nsew")
             remove_btn.grid(row=row, column=1, sticky="nsew")

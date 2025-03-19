@@ -49,7 +49,7 @@ class AddPosition(ctk.CTkFrame):
         if current_pos is not None:
             img, pos = current_pos
             label = "pos-{}".format(self.pm.len()+1)
-            
+            # TODO fix error remove 
             self.pm.add_position(label, pos)
             print("Position saved")
             print(label)
