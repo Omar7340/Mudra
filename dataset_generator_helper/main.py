@@ -48,15 +48,12 @@ class AddPosition(ctk.CTkFrame):
 
         if current_pos is not None:
             img, pos = current_pos
-            data_item = {
-                "label": str(self.pm.len()+1),
-                # "image": img,
-                "position": pos
-            }
-
-            self.pm.add_position(data_item)
+            label = "pos-{}".format(self.pm.len()+1)
+            
+            self.pm.add_position(label, pos)
             print("Position saved")
-            print(data_item)
+            print(label)
+            print(pos)
         else:
             print("No position to save")
 

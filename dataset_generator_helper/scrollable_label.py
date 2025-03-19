@@ -18,13 +18,13 @@ class ScrollableLabels(ctk.CTkScrollableFrame):
             i[0].destroy()
             i[1].destroy()
     
-    def update_positions(self, positions):
+    def update_positions(self, positions : dict):
         self.clean()
 
         row = 0
-        for i in positions:
-            label = ctk.CTkLabel(self, text=i['label'])
-            remove_btn = ctk.CTkButton(self, text="Remove", command= lambda: self.pm.remove_position(i['label']))
+        for k in positions.keys():
+            label = ctk.CTkLabel(self, text=k)
+            remove_btn = ctk.CTkButton(self, text="Remove", command= lambda: self.pm.remove_position(k))
 
             label.grid(row=row, column=0, sticky="nsew")
             remove_btn.grid(row=row, column=1, sticky="nsew")
