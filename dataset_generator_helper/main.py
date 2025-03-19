@@ -14,7 +14,12 @@ from PIL import Image
 import mediapipe as mp
 import time
 
-positions = []
+positions = [
+{'label': '1', 'position': ""},
+{'label': '2', 'position': ""},
+{'label': '3', 'position': ""},
+{'label': '4', 'position': ""}
+    ]
 
 WIDTH = 500
 HEIGHT = 400
@@ -155,7 +160,7 @@ class AddPosition(customtkinter.CTkFrame):
             img, pos = current_pos
             data_item = {
                 "label": str(len(positions)+1),
-                "image": img,
+                # "image": img,
                 "position": pos
             }
 
@@ -168,6 +173,41 @@ class AddPosition(customtkinter.CTkFrame):
     def destroy(self): # TODO: implement destroy method
         self.canvas.clean_up()
         super().destroy()
+
+class ScrollablePositions(customtkinter.CTkScrollableFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.grid_columnconfigure(0, weight=2)
+        self.grid_columnconfigure(1, weight=1)
+
+        self.list = []
+        self.after(100, self.update_pos)
+    
+    def update_pos(self):
+        row = 0
+        for i in positions:
+            label = customtkinter.CTkLabel(self, text=i['label'])
+            remove_btn = customtkinter.CTkButton(self, text="Remove", command= lambda: self.remove_pos(i['label']))
+
+            label.grid(row=row, column=0, sticky="nsew")
+            remove_btn.grid(row=row, column=1, sticky="nsew")
+
+            self.list.append((label, remove_btn))
+            row += 1
+    
+    def remove_pos(self, label):
+        filter(lambda x: (x.label != label),positions)
+        self.update_pos()
+
+class PositionFrame(customtkinter.CTkFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+
+        self.label = customtkinter.CTkLabel(self, text="List of position")
+        self.label.grid(row=0, column=0, sticky="ew")
+
+        self.label_positions = ScrollablePositions(master=self)
+        self.label_positions.grid(row=1, column=0, sticky="nsew")
 
 class App(customtkinter.CTk):
     def __init__(self, *args, **kwargs):
@@ -182,16 +222,11 @@ class App(customtkinter.CTk):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
 
-        self.label = customtkinter.CTkLabel(self, text="List of position")
-        self.label.grid(row=0, column=0, sticky="ew")
-
-        self.textbox = customtkinter.CTkTextbox(
-            master=self, width=400, corner_radius=0)
-        self.textbox.grid(row=1, column=0, sticky="nsew")
-        self.textbox.insert("0.0", "Some example text!\n" * 50)
+        self.positions_frame = PositionFrame(master=self)
+        self.positions_frame.grid(row=0, column=0, sticky="nsew")
 
         self.capture_frame = AddPosition(master=self)
-        self.capture_frame.grid(row=1, column=1, sticky="nsew")
+        self.capture_frame.grid(row=0, column=1, sticky="nsew")
 
 app = App()
 app.mainloop()
