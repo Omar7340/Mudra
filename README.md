@@ -9,6 +9,27 @@ This project consists of three main modules:
 2. Model Trainer: Trains machine learning models for sign language recognition
 3. Recognition Module: Deploys trained models for real-time sign language interpretation
 
+## Requirements
+
+- Python 
+- Poetry (for managing dependencies)
+
+## Usage
+
+### Dataset Generator Helper
+
+1. Install dependencies :
+
+```bash
+poetry install
+```
+
+2. Run the tool :
+
+```bash
+poetry run python ./dataset_generator_helper/main.py
+```
+
 ## Inspiration
 
  - Hand Tracking using MediaPipe from Sousannah (see [https://github.com/Sousannah/hand-tracking-using-mediapipe](https://github.com/Sousannah/hand-tracking-using-mediapipe))
