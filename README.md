@@ -1,13 +1,13 @@
 # Dataset Generator Helper
 
-A tool designed for sign language recognition using machine learning.
+A tool designed for hand gesture recognition using mediapipe machine learning.
 
 ## Overview
 
 This project consists of three main modules:
-1. Dataset Generator: Creates and manages sign language gesture datasets
-2. Model Trainer: Trains machine learning models for sign language recognition
-3. Recognition Module: Deploys trained models for real-time sign language interpretation
+1. Dataset Generator: Creates and manages gesture datasets
+2. Model Trainer: Trains machine learning models for gesture recognition
+3. Recognition Module: Deploys trained models for real-time gesture interpretation
 
 ## Requirements
 
