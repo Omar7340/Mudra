@@ -24,7 +24,9 @@ This project consists of three main modules:
 poetry install
 ```
 
-2. Run the tool :
+2. Modify the video capture device index in **./dataset_generator_helper/configs.py** if needed.
+
+3. Run the tool :
 
 ```bash
 poetry run python ./dataset_generator_helper/main.py

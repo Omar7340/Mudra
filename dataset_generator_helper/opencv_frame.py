@@ -3,11 +3,7 @@ import cv2
 import mediapipe as mp
 from PIL import Image
 import time
-
-VIDEO_CAPTURE = 1  # 0 for default or back camera, 1 for external or front camera
-
-FPS = 30
-TIK = 1000 // FPS
+from configs import *
 
 class OpenCVFrame(ctk.CTkFrame):
     def __init__(self, master, video_capture=VIDEO_CAPTURE, **kwargs):
@@ -76,7 +72,7 @@ class OpenCVFrame(ctk.CTkFrame):
                 for id, lm in enumerate(handLms.landmark):
                     h, w, c = frame.shape
                     cx, cy = int(lm.x * w), int(lm.y * h)
-                    # print(id, cx, cy)
+
                     if id == 4 :
                         cv2.circle(frame, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
                     if id == 8 :

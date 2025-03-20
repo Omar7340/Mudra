@@ -13,18 +13,11 @@ from opencv_frame import OpenCVFrame
 from position_manager import PositionManager
 from scrollable_label import ScrollableLabels
 from serializer import NormalizedLandmarkListSerializer
+from configs import *
 
 import re
 import os
 import json
-
-WIDTH = 500
-HEIGHT = 400
-
-SAVE_PATH = "./dataset/"
-
-
-
 
 class AddPosition(ctk.CTkFrame):
     def __init__(self, master : ctk.CTk, position_manager : PositionManager, **kwargs):
@@ -55,7 +48,7 @@ class AddPosition(ctk.CTkFrame):
         else:
             print("No position to save")
 
-    def destroy(self): # TODO: implement destroy method
+    def destroy(self):
         self.canvas.clean_up()
         super().destroy()
 

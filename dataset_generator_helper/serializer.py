@@ -1,6 +1,3 @@
-import json
-
-
 class NormalizedLandmarkListSerializer:
     def __init__(self, data):
         self._data = data
