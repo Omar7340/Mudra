@@ -12,6 +12,7 @@ import customtkinter as ctk
 from opencv_frame import OpenCVFrame
 from position_manager import PositionManager
 from scrollable_label import ScrollableLabels
+from serializer import NormalizedLandmarkListSerializer
 
 import re
 import os
@@ -37,10 +38,10 @@ class AddPosition(ctk.CTkFrame):
         self.canvas = OpenCVFrame(master=self)
         self.canvas.grid(row=1, column=0, sticky="nsew")
 
-        self.take_snapshot_btn = ctk.CTkButton(self, text="Take snapshot (or press !)", command=self.take_snapshot)
+        self.take_snapshot_btn = ctk.CTkButton(self, text="Take snapshot (or press X)", command=self.take_snapshot)
         self.take_snapshot_btn.grid(row=3, column=0, sticky="nsew")
 
-        master.bind("!", lambda e : self.take_snapshot())
+        master.bind("x", lambda e : self.take_snapshot())
 
     def take_snapshot(self):
 
@@ -92,9 +93,10 @@ class PositionFrame(ctk.CTkFrame):
             if not sanitized.endswith('.json'):
                 sanitized += '.json'
             
-            
             # Create save directory if it doesn't exist
             os.makedirs(SAVE_PATH, exist_ok=True)
+
+            positions = NormalizedLandmarkListSerializer(positions).serialize()
             
             # Save positions to JSON file
             save_file = os.path.join(SAVE_PATH, sanitized)
