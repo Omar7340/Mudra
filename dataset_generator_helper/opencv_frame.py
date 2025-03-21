@@ -30,6 +30,7 @@ class OpenCVFrame(ctk.CTkFrame):
         ret, frame = self.cap.read()
         if ret:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame = cv2.flip(frame, 1)
 
             ## save image before processing
             self.frame.image = Image.fromarray(frame)
@@ -63,7 +64,6 @@ class OpenCVFrame(ctk.CTkFrame):
         
         self.actual_position = None
         
-        frame = cv2.flip(frame, 1)
         results = self.hands.process(frame)
 
         h, w, c = frame.shape
@@ -110,7 +110,7 @@ class OpenCVFrame(ctk.CTkFrame):
                 self.mpDraw.draw_landmarks(frame, handLms, self.mpHands.HAND_CONNECTIONS)
             self.actual_position = results.multi_hand_landmarks
         
-        ## Crop frame
+        ## Crop processed frame and original
         frame = Image.fromarray(frame)
 
         x_right += MARGIN_CROP
@@ -121,6 +121,7 @@ class OpenCVFrame(ctk.CTkFrame):
         
         if x_left < x_right and y_top < y_bottom:
             frame = frame.crop((x_left, y_top, x_right, y_bottom))
+            self.frame.image = self.frame.image.crop((x_left, y_top, x_right, y_bottom))
         
         return frame
     
