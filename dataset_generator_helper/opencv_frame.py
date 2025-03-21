@@ -35,8 +35,6 @@ class OpenCVFrame(ctk.CTkFrame):
             self.frame.image = Image.fromarray(frame)
 
             frame = self.mediapipe_process(frame)
-
-            frame = Image.fromarray(frame)
             
             image = ctk.CTkImage(dark_image=frame, size=(frame.width, frame.height))
             
@@ -68,11 +66,35 @@ class OpenCVFrame(ctk.CTkFrame):
         frame = cv2.flip(frame, 1)
         results = self.hands.process(frame)
 
+        h, w, c = frame.shape
+
+        # init at the extreme point
+        x_left = w
+        y_top = h
+
+        x_right = 0 
+        y_bottom = 0
+
         if results.multi_hand_landmarks:
             for handLms in results.multi_hand_landmarks:
                 for id, lm in enumerate(handLms.landmark):
-                    h, w, c = frame.shape
                     cx, cy = int(lm.x * w), int(lm.y * h)
+
+                    # Check if this landmark is the closest to the limit of the frame
+                    # needed for cropping the frame on the hand
+                    if cx < x_left:
+                        x_left = cx
+                    
+                    if cx > x_right:
+                        x_right = cx
+                    
+                    if cy < y_top:
+                        y_top = cy
+                    
+                    if cy > y_bottom:
+                        y_bottom = cy
+                    
+                    # Draw landmarks
 
                     if id == 4 :
                         cv2.circle(frame, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
@@ -87,6 +109,18 @@ class OpenCVFrame(ctk.CTkFrame):
 
                 self.mpDraw.draw_landmarks(frame, handLms, self.mpHands.HAND_CONNECTIONS)
             self.actual_position = results.multi_hand_landmarks
+        
+        ## Crop frame
+        frame = Image.fromarray(frame)
+
+        x_right += MARGIN_CROP
+        y_bottom += MARGIN_CROP
+
+        x_left -= MARGIN_CROP
+        y_top -= MARGIN_CROP
+        
+        if x_left < x_right and y_top < y_bottom:
+            frame = frame.crop((x_left, y_top, x_right, y_bottom))
         
         return frame
     

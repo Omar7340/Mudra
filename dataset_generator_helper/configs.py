@@ -9,3 +9,5 @@ HEIGHT = 400
 SAVE_PATH = "./dataset/"
 
 TAKE_SNAPSHOT_SHORTCUT = "x"
+
+MARGIN_CROP = 20
