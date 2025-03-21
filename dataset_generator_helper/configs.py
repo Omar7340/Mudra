@@ -7,3 +7,5 @@ WIDTH = 500
 HEIGHT = 400
 
 SAVE_PATH = "./dataset/"
+
+TAKE_SNAPSHOT_SHORTCUT = "x"

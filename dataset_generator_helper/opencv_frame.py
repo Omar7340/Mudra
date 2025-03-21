@@ -31,13 +31,15 @@ class OpenCVFrame(ctk.CTkFrame):
         if ret:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
+            ## save image before processing
+            self.frame.image = Image.fromarray(frame)
+
             frame = self.mediapipe_process(frame)
 
             frame = Image.fromarray(frame)
             
             image = ctk.CTkImage(dark_image=frame, size=(frame.width, frame.height))
             
-            self.frame.image = image
             self.frame.configure(image=image, text="")
         else:
             self.frame.configure(text="No frame")
@@ -62,7 +64,6 @@ class OpenCVFrame(ctk.CTkFrame):
             self.mediapipe_init()
         
         self.actual_position = None
-        self.frame.image = None
         
         frame = cv2.flip(frame, 1)
         results = self.hands.process(frame)
@@ -90,10 +91,15 @@ class OpenCVFrame(ctk.CTkFrame):
         return frame
     
     def get_current_position(self):
-        pos = [self.frame.image, self.actual_position]
-        if pos[0] is not None and pos[1] is not None:
-            return pos
-        return None
+        pos = {
+            "img": self.frame.image,
+            "pos": self.actual_position
+        }
+
+        if pos["img"] is None or pos["pos"] is None:
+            return None
+
+        return pos
     
     def clean_up(self):
         self.cap.release()
