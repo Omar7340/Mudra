@@ -80,6 +80,9 @@ class PositionFrame(ctk.CTkFrame):
     
     def save_handler(self):
 
+        if self.save_coord_check.get() == 0 and self.save_img_check.get() == 0:
+            return
+
         self.save_dialog = ctk.CTkInputDialog(text="Type the name of this dataset (it will be saved at {})".format(SAVE_PATH), title="Save Dataset")
         
         dataset_name = self.save_dialog.get_input()
